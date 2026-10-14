@@ -1,75 +1,87 @@
 # Veto
 ### Say no to fraud. Out loud.
 
-**Veto is a voice-first fraud decision-support prototype that explains suspicious card activity in plain language and asks before taking consequential action.**
+**Veto is a voice-first fraud decision-support prototype that connects transaction scoring to evidence, plain-language explanation, and user-controlled simulated actions.**
 
-> A hackathon prototype, not a bank, card issuer, payment processor, or live fraud-prevention service.
+> Veto is a hackathon prototype. It is not a bank, card issuer, payment processor, or live fraud-prevention service.
 
-Veto is being built for the Amazon Developer Hackathon 2026. The intended experience combines a voice-oriented assistant, an explainable fraud-scoring service, explicit user confirmation for consequential actions, and a compact dashboard that makes the evidence inspectable.
+## Product direction
 
-## What we are building
+Veto is targeting the **Alexa+ track**, together with the **AWS Builder** and **Open Source** mini-challenges. The project is designed around a self-hosted MCP server and a web voice client that connects to it as a real MCP client. It is not presented as a live connection into the Alexa+ assistant.
 
-- **Ask:** a user asks what happened on their card or about a particular transaction.
-- **Inspect:** Veto retrieves only the demo user's authorized transaction records and scoring evidence.
-- **Explain:** it presents the model's risk estimate and the evidence behind it, distinguishing evidence from inference.
-- **Choose:** the user can request a simulated action such as freeze, dispute, or trust a merchant.
-- **Confirm:** consequential actions require explicit confirmation and server-side authorization.
-- **Remember:** the demo can retain a user-scoped decision history, with clear boundaries and deletion behavior.
+The hackathon FAQ says the gated Alexa+ developer tools are preview-only and unavailable to hackathon participants. The official rules permit a simulated Alexa+ experience via a web front end; Veto's selected approach goes further by exposing an actual MCP server and exercising its tools over Streamable HTTP from the web client.
 
-## Project status
+Official references:
+- [Hackathon rules](https://amazonappdev2026.devpost.com/rules)
+- [Hackathon FAQ](https://amazonappdev2026.devpost.com/details/faqs)
+- [Official TypeScript MCP SDK](https://github.com/modelcontextprotocol/typescript-sdk)
 
-**Phase:** foundation and specification.  
-**Implementation status:** features are planned until code and tests demonstrate otherwise.  
-**Current repository:** documentation-first bootstrap; no functioning fraud-scoring or Alexa+ integration is claimed yet.
+## Locked technical decisions
 
-See [the product requirements](docs/PRD.md), [technical design](docs/TRD.md), and [architecture](docs/ARCHITECTURE.md) for the source of truth.
+These are the selected implementation decisions; they do not mean the application or AWS resources already exist.
 
-## Principles
+- **Dataset:** Kaggle's Sparkov-generated credit-card transaction dataset, using fraudTrain and fraudTest. Raw files stay out of Git. Dataset terms, exact source/version, provenance, and the permitted use of derived artifacts must be recorded before importing data.
+- **Features:** amount_vs_user_median, distance_from_home_km, hour, is_night, is_new_merchant, txn_count_last_1h, mins_since_last_txn, and category.
+- **Model:** stacking ensemble of logistic regression, random forest, and XGBoost based on the existing [Ensemble repository](https://github.com/Cyberangelo-King/Ensemble-Machine-Learning-for-Online-Credit-Card-Fraud-Detection), with SHAP TreeExplainer for contribution evidence. Reuse must preserve feature-order/version consistency and be backed by an evaluation report.
+- **MCP:** self-hosted TypeScript MCP server, MCP spec version 2025-11-25 or later, Streamable HTTP, using the selected @modelcontextprotocol/sdk package at a compatible pinned version.
+- **Voice client:** a web voice interface that instantiates a real MCP client, connects to Veto's Streamable HTTP endpoint, discovers/calls tools through MCP, and presents speech input/output. This is not a direct Alexa+ assistant connection.
+- **AWS target:** Lambda for the MCP endpoint and FastAPI scoring service (using Mangum for Lambda adaptation), DynamoDB single-table persistence, Amazon Bedrock for evidence-grounded narration (Nova Lite by default; Claude Haiku as an optional configured alternative), and Amazon Polly for voice output.
+- **Local development:** the MCP server, scoring API, and web client must run locally. AWS integrations are optional in local mode; use explicit local persistence/dev adapters and deterministic evidence-based narration/browser speech fallbacks when AWS credentials or services are not configured. Local mode must exercise the same tool contracts and action-safety rules.
 
-1. **Evidence before eloquence.** The language model can explain supplied evidence; it must not invent transaction facts, model features, or completed actions.
-2. **Human control for consequential actions.** Freeze, unfreeze, dispute, and merchant-trust changes require confirmation in the prototype.
-3. **Secure by boundary.** Authentication, resource ownership, authorization, idempotency, and auditability are server responsibilities—not prompt instructions.
-4. **Honest simulation.** A simulated state change must never be represented as a real bank or card action.
-5. **Useful, not theatrical.** The interface should feel like a considered financial product, not a generic AI chat demo.
-6. **Accessible risk communication.** Risk uses labels and icons as well as color.
-7. **Small enough to ship.** Prefer one complete, testable end-to-end story over a broad collection of unfinished integrations.
+Read [ADR 005: dataset and model](docs/decisions/005-dataset-and-model.md), [ADR 006: MCP client and transport](docs/decisions/006-mcp-client-and-transport.md), and [ADR 007: AWS and local runtime](docs/decisions/007-aws-and-local-runtime.md).
 
-## Intended technical direction
+## Core experience
 
-- TypeScript MCP server exposing narrowly scoped tools.
-- Python scoring service for model inference and structured evidence.
-- A documented model-training/evaluation pipeline using appropriately licensed or synthetic data.
-- AWS-first deployment, subject to a verified low-cost path and current service constraints.
-- A React dashboard and a client-independent simulator if a real Alexa+ integration cannot be completed and verified in time.
+1. Ask Veto about recent synthetic card activity.
+2. Inspect a transaction and its risk score, model metadata, evidence, and limitations.
+3. Get an explanation grounded in the model's actual output.
+4. Test a prompt-injection string embedded in merchant text; Veto treats it as data, not an instruction.
+5. Request a demo-card freeze, cancel it, and verify there is no state change.
+6. Request the freeze again, explicitly confirm, and verify the simulated state and decision history change.
 
-The exact hosting choice, dataset, model, integrations, and deployment topology remain decisions to validate. Do not treat this direction as evidence that those services are already configured.
+All card and merchant actions remain simulated. They must never be described as real bank or card-network actions.
+
+## Status
+
+**Current state:** documentation and workflow foundation. The product code, model service, MCP endpoint, web client, and AWS resources are not yet claimed to be implemented or deployed. Features become complete only when code, tests, and a reproducible demo prove them.
+
+The submission checklist is in [docs/SUBMISSION_CHECKLIST.md](docs/SUBMISSION_CHECKLIST.md). The demo must remain below the official three-minute video limit; Veto's target script is capped at 2 minutes 50 seconds.
+
+## Design principles
+
+- Evidence before eloquence: the language model may explain evidence, not invent it.
+- Human control: consequential actions need explicit, server-verified confirmation.
+- Secure by boundary: prompts do not replace authorization, validation, or ownership checks.
+- Honest simulation: every demo action is explicitly simulated.
+- Accessible risk communication: text/icons accompany red, amber, and green indicators.
+- Deliberate visual identity: a restrained charcoal/slate foundation, careful typography, amber attention, green lower-risk, and red high-risk/blocked states. Avoid generic AI-dashboard patterns and decorative filler.
 
 ## Development workflow
 
-- Work on short-lived feature branches.
-- Open pull requests for review and merge only after checks and acceptance criteria are satisfied.
-- Record meaningful architecture choices in `docs/decisions/`.
-- Keep the build journal evidence-based: completed work must link to a commit, test, screenshot, or other artifact.
-- Never commit credentials, real payment-card data, customer data, or downloaded datasets without approved licensing and handling rules.
+- Use short-lived branches and a pull request for review.
+- Keep decisions in docs/decisions and evidence in docs/BUILD_JOURNAL.md.
+- Test denial, cancellation, replay, and failure paths alongside the happy path.
+- Never commit credentials, real payment-card data, private customer data, or raw datasets unless the rights and handling policy explicitly permit it.
+- Do not add app code in a documentation-only change.
 
 ## Repository map
 
-- `docs/PRD.md` — users, product scope, journeys, requirements, and acceptance criteria.
-- `docs/TRD.md` — technical requirements and implementation constraints.
-- `docs/ARCHITECTURE.md` — components, trust boundaries, and data flows.
-- `docs/API_CONTRACTS.md` — tool and service contracts.
-- `docs/DATA_DICTIONARY.md` — canonical transaction, score, explanation, and action fields.
-- `docs/DESIGN_SPEC.md` — visual system, interaction rules, and accessibility.
-- `docs/SECURITY_MODEL.md` and `docs/THREAT_MODEL.md` — security requirements and abuse cases.
-- `docs/PRIVACY_AND_COMPLIANCE.md` — data minimization, licensing, and compliance questions to verify.
-- `docs/TEST_STRATEGY.md` — test layers and release gates.
-- `docs/DEPLOYMENT_RUNBOOK.md` and `docs/DEMO_SCRIPT.md` — deployment and truthful demonstration.
-- `docs/BUILD_JOURNAL.md` and `docs/FRICTION_LOG.md` — evidence of progress and real blockers.
+- docs/PRD.md — product requirements and acceptance criteria.
+- docs/TRD.md — locked implementation stack and technical constraints.
+- docs/ARCHITECTURE.md — components, trust boundaries, and data flow.
+- docs/API_CONTRACTS.md — MCP tool contracts.
+- docs/DATA_DICTIONARY.md — transaction, score, evidence, and action fields.
+- docs/DESIGN_SPEC.md — visual system and accessibility.
+- docs/SECURITY_MODEL.md and docs/THREAT_MODEL.md — security controls and abuse cases.
+- docs/TEST_STRATEGY.md — test layers and release gates.
+- docs/DEMO_SCRIPT.md and docs/SUBMISSION_CHECKLIST.md — demo and submission requirements.
+- docs/PRIVACY_AND_COMPLIANCE.md and docs/research/ — data handling and evidence-based research notes.
+- docs/BUILD_JOURNAL.md and docs/FRICTION_LOG.md — actual work evidence and tool friction.
 
 ## Before contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [AGENTS.md](AGENTS.md). Treat all requirements and architecture decisions as reviewable proposals until validated against the actual hackathon rules, dataset terms, and AWS/Alexa+ capabilities.
+Read CONTRIBUTING.md, SECURITY.md, and AGENTS.md. Requirements describe intended behavior until verified by working implementation and tests.
 
 ## License
 
-The project code is intended to use the MIT License. That license does **not** automatically grant rights to datasets, third-party assets, model weights, or services.
+The repository's source code is licensed under the standard MIT License in LICENSE, with copyright © 2026 Faith Akinola Boyejo. **That license does not automatically cover datasets, trained model artifacts, third-party code, fonts, icons, images, brand assets, or external services.** Each retains its own applicable license and terms. The Sparkov dataset and the origin/rights of model artifacts must be documented separately. Do not redistribute raw data or artifacts until permitted use is verified.
