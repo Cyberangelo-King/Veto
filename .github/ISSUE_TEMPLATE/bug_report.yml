@@ -1,0 +1,34 @@
+name: Bug report
+description: Report a reproducible defect in Veto
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: "Use synthetic/demo data only. Never include credentials, real card data, or private customer records."
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      description: Include synthetic fixture details.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Logs/screenshots/test output with secrets and sensitive data removed.
+    validations:
+      required: false

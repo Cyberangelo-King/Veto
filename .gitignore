@@ -1,0 +1,60 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+.aws/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# JavaScript / TypeScript
+node_modules/
+.next/
+.vite/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Editors / operating systems
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Data, model artifacts, local output
+data/raw/
+data/processed/
+data/private/
+models/*.pkl
+models/*.joblib
+models/*.onnx
+artifacts/
+reports/local/
+*.parquet
+*.csv
+*.sqlite
+*.db
+
+# Deployment output
+.tmp/
+.cache/
+.aws-sam/
+cdk.out/
+terraform.tfstate*

@@ -1,0 +1,40 @@
+name: Documentation and safety checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  repository-hygiene:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check whitespace
+        run: git diff --check
+      - name: Check required documents
+        run: |
+          set -eu
+          for file in README.md AGENTS.md CONTRIBUTING.md SECURITY.md docs/PRD.md docs/TRD.md docs/ARCHITECTURE.md docs/API_CONTRACTS.md docs/SECURITY_MODEL.md docs/THREAT_MODEL.md docs/SUBMISSION_CHECKLIST.md docs/decisions/005-dataset-and-model.md docs/decisions/006-mcp-client-and-transport.md docs/decisions/007-aws-and-local-runtime.md; do
+            test -s "$file" || { echo "Missing required file: $file"; exit 1; }
+          done
+      - name: Check common credential patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE --exclude-dir=.git --exclude='*.md' --exclude='.env.example' '(AKIA[0-9A-Z]{16}|-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----|gh[pousr]_[A-Za-z0-9]{30,})' .; then
+            echo "Potential credential pattern found; review before merging."
+            exit 1
+          fi
+          echo "No configured high-confidence credential pattern found."
+      - name: Check env example
+        run: |
+          if grep -nE '=(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,})' .env.example; then
+            echo "Credential-like value in .env.example"
+            exit 1
+          fi
+          echo "No matched credential pattern in .env.example."
