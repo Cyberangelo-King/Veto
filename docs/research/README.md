@@ -1,16 +1,18 @@
 # Research Register
 
-Use current official sources. Do not mark complete from memory or a search-result snippet.
+Use current official sources. Distinguish verified external rules from implementation checks still pending. Never mark a technical integration complete until it is tested.
 
-| ID | Question | Preferred evidence | Status | Decision impact |
-|---|---|---|---|---|
-| R-01 | Official Amazon Developer Hackathon 2026 rules, track criteria, deadline, rubric, open-source mini-challenge | Official event rules/organizer guidance; record access date and exact clause | Open | Eligibility/scope |
-| R-02 | Alexa+ and MCP capabilities available to this account | Official Amazon/Alexa developer docs and account-level proof | Open | Client architecture |
-| R-03 | AWS service availability, pricing, region, quotas, retention | Official AWS docs/pricing | Open | Hosting |
-| R-04 | Dataset use/training/redistribution rights | Dataset owner/provider terms/license | Open | Data/model |
-| R-05 | Dataset feature meanings, target, leakage, units | Dataset documentation/data dictionary | Open | Validity |
-| R-06 | Applicable Nigerian data-protection/financial-service obligations | Official statutory/regulator sources; legal advice if needed | Open | Privacy/legal |
-| R-07 | Package, model, font, icon, visual asset licenses | Original license files and official terms | Open | Compliance |
-| R-08 | Dated USD-to-NGN display rate if needed | Credible source and explicit date | Open | UI only |
+| ID | Priority | Question / decision | Evidence | Status | Decision impact |
+|---|---|---|---|---|---|
+| R-01 | P0 | Official Amazon Developer Hackathon 2026 rules, Alexa+ track, AWS Builder/Open Source mini-challenges, demo/video and product-feedback requirements | [Official rules](https://amazonappdev2026.devpost.com/rules), accessed 2026-10-14 | Verified from official rules; captured in docs/SUBMISSION_CHECKLIST.md | Submission compliance |
+| R-02 | P0 | Alexa+ tooling access and MCP track path | [Official FAQ](https://amazonappdev2026.devpost.com/details/faqs), accessed 2026-10-14; [official TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) | Gated Alexa+ preview tools unavailable to hackathon participants per FAQ; self-hosted MCP server + genuine web MCP client selected. SDK compatibility and runtime path must be proven in code/tests. | Primary track implementation |
+| R-03 | P0 | AWS Lambda, DynamoDB, Bedrock, Polly availability, permissions, deployment adapter, and cost | Official AWS documentation/pricing and account-level test required | Architecture selected by ADR 007; local mode remains required; verify availability, streaming compatibility, pricing, IAM, and teardown before deployment | AWS Builder / deploy |
+| R-04 | P0 | Kaggle Sparkov dataset exact source/version, files, rights and model-artifact provenance | [Kaggle dataset page](https://www.kaggle.com/datasets/kartik2112/fraud-detection); [Ensemble repository](https://github.com/Cyberangelo-King/Ensemble-Machine-Learning-for-Online-Credit-Card-Fraud-Detection) | Dataset and model approach selected by ADR 005; record the exact accessed dataset metadata/license and audit Ensemble artifacts before import/reuse. Raw CSVs stay out of Git. | Scoring/demo data path |
+| R-05 | P0 | Causal/time-safe feature engineering, leakage, split/evaluation, and SHAP alignment | Dataset field definitions + audited code/evaluation artifact | Open until implementation/tests prove no look-ahead, correct per-user history, exact feature order, and held-out evaluation. | Scoring/explanation correctness |
+| R-06 | P2 | Broader legal/privacy applicability and display-currency decision | Consolidated note: [P2 legal and currency note](P2-legal-and-currency-note.md) | Merged with R-08 into one deferred P2 note. Synthetic data and simulated actions only for this demo; full review becomes a blocker before any real customer data or live financial integration. | Future product boundary |
+| R-07 | P1 | Package, model, font, icon and visual-asset licenses | Upstream package/license files and official asset terms | Verify before release; MIT for this repo does not license third-party datasets, assets or model artifacts. | Open-source/submission integrity |
+| R-08 | P2 | FX rate if converting USD display values to NGN | Consolidated note: [P2 legal and currency note](P2-legal-and-currency-note.md) | Merged into R-06. Default: display the dataset's USD amount as USD and do not convert for the demo unless there is a verified user need. | Avoidable unless conversion is shown |
 
-For each item record question, source title/official URL, authority, publication/update date, access date, relevant clause summarized in your own words, conflicts/assumptions, decision, approver, and revisit condition. Do not include secrets or private account details.
+## Evidence-entry format
+
+For each completed research item, record the source title/official URL, publisher, publication/update date where available, date accessed, relevant clause summarized in your own words, conflicts/assumptions, decision, approver, and revisit condition. Do not include secrets or private account details.
