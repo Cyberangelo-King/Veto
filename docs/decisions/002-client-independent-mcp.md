@@ -1,19 +1,19 @@
-# ADR 002 — Client-independent MCP with simulator fallback
+# ADR 002 — Initial client-independent MCP exploration
 
-- Status: Proposed pending platform verification
-- Date: 2026-10-14
-- Owner: Product owner
+- **Status:** Superseded by ADR 006
+- **Date:** 2026-10-14
+- **Owner:** Product owner
 
 ## Context
-Alexa+ access, MCP transport, account eligibility, and review requirements must be verified. The core demo cannot depend on an unproven integration.
+The initial repository bootstrap left the final client/integration path open pending official platform evidence. This record preserves the initial exploration rather than remaining an active proposal.
 
-## Options
-1. Assume direct Alexa+ integration.
-2. Keep MCP contracts client-independent and build a simulator that exercises the same tools; add Alexa+ if official docs/account access support it.
-3. Build only a browser mock without real tool contracts.
+## Initial direction
+The project should keep its tools independent of the client and use a web simulator if a direct Alexa+ integration could not be verified.
 
-## Decision
-Prefer option 2. The simulator is a tested fallback, not something to misrepresent as Alexa+. Submission copy must describe the delivered integration exactly.
+## Resolution
+Official hackathon rules and FAQ have now been reviewed. The accepted path is in ADR 006: a self-hosted TypeScript MCP server using MCP 2025-11-25 or later over Streamable HTTP, plus a web voice client that uses a real MCP client to call the server. The project does not claim a live connection into the Alexa+ assistant because the gated Alexa+ developer tools are unavailable to hackathon participants.
 
-## Revisit
-After official docs and account-level proof establish integration path, eligibility, and time/cost trade-offs.
+ADR 007 locks the AWS and local runtime target.
+
+## Historical note
+Do not treat this ADR's former “proposed” status as the current architecture. ADRs 006 and 007 are the active decisions; protocol, SDK, and runtime behavior still require implementation tests.
