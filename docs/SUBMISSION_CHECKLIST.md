@@ -41,9 +41,9 @@ Do not check an item until the repository, actual implementation, or submission 
 - [ ] Keep the Veto repository public: https://github.com/Cyberangelo-King/Veto
 - [ ] Ensure a plain standard MIT License is present at repository root and GitHub detects/displays the license near the top of the public repository page.
 - [ ] Confirm LICENSE reads “Copyright (c) 2026 Faith Akinola Boyejo”.
-- [ ] Do not imply MIT covers datasets, model artifacts, dependencies, fonts, icons, images, brands, or external services.
+- [ ] Do not imply MIT covers datasets, model artifacts, dependencies, fonts, icons, images, brand assets, or external services.
 - [ ] Record the exact contribution URL (for example, the relevant PR or branch), repository URL, GitHub username Cyberangelo-King, and a short description of what changed, how it works, and why it matters.
-- [ ] Ensure the contribution/repository work was created during the hackathon window and is additional to the primary-track demonstration.
+- [ ] Confirm the Open Source form's interpretation of Veto as a new open-source project layered with the Alexa+ submission. If a distinct contribution URL is required, use a meaningful public branch/PR created during the hackathon window; do not assume that a link to the primary submission alone satisfies every field.
 - [ ] The official rules permit a branch/PR contribution to remain unmerged; do not claim a PR is merged unless it is.
 
 ## 4. Repository setup and run instructions
@@ -63,8 +63,8 @@ Do not check an item until the repository, actual implementation, or submission 
 - [ ] Upload the video publicly to YouTube or Vimeo and include its URL in Devpost.
 - [ ] Keep the official video under three minutes; Veto's internal hard cap is 2:50.
 - [ ] Show the project actually functioning on the intended platform; include the web voice client, the MCP tool call path, scoring/explanation, prompt-injection handling, and cancel-then-confirm simulated freeze.
-- [ ] Use English narration/text or provide the required English translation for non-English materials.
-- [ ] Avoid third-party trademarks and copyrighted music/footage unless permission is held.
+- [ ] Use English narration/captions and readable text; provide required English translation if other materials are not in English.
+- [ ] Avoid third-party trademarks and copyrighted music/footage unless permission has been obtained.
 - [ ] Do not hide failures through editing or imply that simulated actions affect a real bank/card.
 - [ ] Ensure the recording matches the submission commit and contains no credentials or private data.
 
